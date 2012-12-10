@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Revolver</title>
+
+        <style type="text/css">
+            html, body {
+                    width: 100%;
+                    height: 100%;
+                    padding: 0;
+                    margin: 0;
+            }
+
+            #notifier {
+                text-align: center;
+                padding: 15px;
+                color: white;
+                font-family: Arial, Verdana, sans-serif;
+                font-size: 18px;
+                font-weight: bold;
+
+                /* initial color and display to show while loading */
+                background-color: black;
+                display: block;
+            }
+
+            #homenode {
+                position: relative;
+                width: 100%;
+                height: 100%;
+            }
+
+            iframe {
+                    width: 100%;
+                    height: 100%;
+                    padding: 0;
+                    margin: 0;
+                    border: 0;
+            }
+        </style>
+
+        <!-- sockjs is required for vert.x's EventBus -->
+        <script type="text/javascript" src="sockjs-0.2.1.min.js"></script>
+
+        <!-- vert.x support -->
+        <script type="text/javascript" src="vertxbus.js"></script>
+
+        <script type="text/javascript" src="revolver.js"></script>
+    </head>
+
+    <body>
+        <div id="notifier">… loading …</div>
+        <div id="homenode"></div>
+
+        <script type="text/javascript">
+            var revolver = null;
+
+            // allow the browser time to load and resize (slow on the pi)
+            // so the the divs are correctly sized.  some images use the size
+            // when building the URL
+            setTimeout(function() {
+                revolver = new Revolver(
+                    window.location.protocol + '//' +
+                    window.location.hostname + ':' +
+                    window.location.port + '/eventbus'
+                );
+            }, 5000);
+
+            // hack around iframes grabbing focus from keyboard events
+            setInterval(function() {
+                window.focus();
+            }, 1000);
+        </script>
+    </body>
+</html>

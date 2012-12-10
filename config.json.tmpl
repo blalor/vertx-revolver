@@ -1,0 +1,10 @@
+{
+    "httpPort": 8082,
+    "duration": 15,
+    "locations": {
+        "ci"        : { "url": "https://ci.jenkins-ci.org/", "reload": true },
+        "xkcd"      : { "url": "http://xkcd.com/",           "reload": false },
+        "vertx"     : { "url": "http://vertx.io/",           "reload": true }
+    },
+    "rotationOrder": ["ci", "xkcd", "vertx"]
+}
