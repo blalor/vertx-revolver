@@ -167,11 +167,11 @@ function Revolver(eventBusUrl) {
 
         var loc = locations[id];
         if (loc) {
-            loc.iframe.style.display = 'block';
-            
             if (loc.reload) {
                 loc.iframe.src = loc.iframe.src;
             }
+
+            loc.iframe.style.display = 'block';
         } else {
             debug("no location for " + id);
         }
