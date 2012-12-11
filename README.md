@@ -19,7 +19,7 @@ This Revolver is a fork and reimagining of an internal application by the same n
 How it works
 ------------
 
-The server is given a set of URLs, which are passed to browsers when they load the index page.  Each configured URL is loaded into an `<iframe>` and displayed (and optionally refreshed) when commanded by the server at a configured rate.  
+The server is given a set of URLs, which are passed to browsers when they load the index page.  Each configured URL is loaded into an `<iframe>` or as the centered background-image of a `<div>` and displayed (and optionally refreshed) when commanded by the server at a configured rate.  
 
 Setup
 -----
@@ -40,5 +40,4 @@ You may find that some pages don't load as expected.  This could be due to a mis
 Future
 ------
 
-* Displaying images centered in the display
 * Manipulating the configured URLs via HTTP endpoints

@@ -70,34 +70,26 @@ function Revolver(eventBusUrl) {
     };
 
     self.setLocation = function(id, location) {
-        var loc = {};
+        self.removeLocation(id);
 
-        if (locations[id]) {
-            loc = locations[id];
+        var loc = locations[id] = location;
+        loc.origUrl = loc.url;
+
+        loc.url = loc.url.replace(new RegExp('@WIDTH@', 'g'), homenode.offsetWidth);
+        loc.url = loc.url.replace(new RegExp('@HEIGHT@', 'g'), homenode.offsetHeight);
+
+        if (loc.containerType === 'div') {
+            loc.container = document.createElement('div');
+            loc.container.className = "imgDiv";
+            loc.container.style.display = 'none';
+            loc.container.style.backgroundImage = "url('" + loc.url + "')";
         } else {
-            locations[id] = loc;
+            loc.container = document.createElement('iframe');
+            loc.container.setAttribute('src', loc.url);
+            loc.container.style.display = 'none';
         }
 
-        loc.reload = location.reload;
-
-        if (loc.origUrl !== location.url) {
-
-            loc.origUrl = loc.url = location.url;
-
-            loc.url = loc.url.replace(new RegExp('@WIDTH@', 'g'), homenode.offsetWidth);
-            loc.url = loc.url.replace(new RegExp('@HEIGHT@', 'g'), homenode.offsetHeight);
-
-            if (loc.iframe) {
-                loc.iframe.src = loc.url;
-            } else {
-                loc.iframe = document.createElement('iframe');
-                loc.iframe.setAttribute('src', loc.url);
-                loc.iframe.setAttribute('id', 'iframe-' + id);
-                loc.iframe.style.display = 'none';
-
-                homenode.appendChild(loc.iframe);
-            }
-        }
+        homenode.appendChild(loc.container);
     };
 
     self.removeLocation = function(id) {
@@ -142,7 +134,11 @@ function Revolver(eventBusUrl) {
             });
 
             eb.registerHandler('revolver.locationUpdated', function(msg) {
-                self.setLocation(msg.id, {url: msg.url, reload: msg.reload});
+                self.setLocation(msg.id, {
+                    url: msg.url,
+                    reload: msg.reload,
+                    containerType: msg.containerType
+                });
             });
 
             eb.registerHandler('revolver.locationDeleted', function(msg) {
@@ -159,19 +155,44 @@ function Revolver(eventBusUrl) {
     self.rotateTo = function(id) {
         debug("rotating to " + id);
 
-        if (currentLocationId) {
-            locations[currentLocationId].iframe.style.display = 'none';
-        }
+        var currentLoc = currentLocationId ? locations[currentLocationId] : null;
+        var nextLoc = locations[id];
 
-        currentLocationId = id;
-
-        var loc = locations[id];
-        if (loc) {
-            if (loc.reload) {
-                loc.iframe.src = loc.iframe.src;
+        function switchView(evt) {
+            if (evt) {
+                // was called as an event listener; remove this callback
+                // "this" is the element we were attached to
+                this.removeEventListener('load', switchView);
             }
 
-            loc.iframe.style.display = 'block';
+            if (currentLoc) {
+                currentLoc.container.style.display = 'none';
+            }
+
+            nextLoc.container.style.display = 'block';
+        }
+
+        if (nextLoc) {
+            // only set currentLocationId if the next location actually exists
+            currentLocationId = id;
+
+            if (nextLoc.reload) {
+                if (nextLoc.containerType === 'div') {
+                    nextLoc.container.style.backgroundImage = nextLoc.container.style.backgroundImage;
+
+                    // no load event dispatched for background image changes
+                    switchView();
+                } else {
+                    nextLoc.container.src = nextLoc.container.src;
+
+                    // only perform switch after new document is loaded, as a
+                    // sort of double-buffering
+                    nextLoc.container.addEventListener('load', switchView);
+                }
+            } else {
+                // no reload; switch view immediately
+                switchView();
+            }
         } else {
             debug("no location for " + id);
         }

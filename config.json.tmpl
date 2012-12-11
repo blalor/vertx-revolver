@@ -2,9 +2,11 @@
     "httpPort": 8082,
     "duration": 15,
     "locations": {
-        "ci"        : { "url": "https://ci.jenkins-ci.org/", "reload": true },
-        "xkcd"      : { "url": "http://xkcd.com/",           "reload": false },
-        "vertx"     : { "url": "http://vertx.io/",           "reload": true }
+        "sixtyPct"  : { "url": "http://assets0.ordienetworks.com/misc/tumblr_lkygpcv5i01qcz3y4.gif", "containerType": "div", "reload": false },
+        "ci"        : { "url": "https://ci.jenkins-ci.org/",           "containerType": "iframe", "reload": true },
+        "xkcd"      : { "url": "http://xkcd.com/",                     "containerType": "iframe", "reload": false },
+        "annoy"     : { "url": "http://imgs.xkcd.com/comics/tags.png", "containerType": "div",    "reload": false },
+        "vertx"     : { "url": "http://vertx.io/",                     "containerType": "iframe", "reload": true }
     },
-    "rotationOrder": ["ci", "xkcd", "vertx"]
+    "rotationOrder": ["sixtyPct", "ci", "xkcd", "annoy", "vertx"]
 }

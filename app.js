@@ -140,19 +140,25 @@ function Revolver(config) {
      * @param id the identifier; must be element-ID-safe
      * @param url the url
      * @param reload boolean; if true, location will be reloaded when displayed
+     * @param containerType iframe or div; defaults to iframe if not provided
      */
-    self.setLocation = function(id, url, reload) {
+    self.setLocation = function(id, url, reload, containerType) {
         // add to rotation order if not already exists
         if (rotationOrder.indexOf(id) === -1) {
             rotationOrder.push(id);
         }
 
+        if (containerType && ((containerType !== 'iframe') || (containerType !== 'div'))) {
+            containerType = null;
+        }
+
         locations[id] = {
             url: url,
-            reload: reload
+            reload: reload,
+            containerType: containerType ? containerType : 'iframe'
         };
 
-        emit('locationUpdated', id, url, reload);
+        emit('locationUpdated', id, url, reload, containerType);
     };
 
     /**
@@ -183,10 +189,10 @@ var revolver = new Revolver({
 });
 
 // bind various EventBus messages to Revolver methods
-revolver.on('locationUpdated', function(id, url, reload) {
+revolver.on('locationUpdated', function(id, url, reload, containerType) {
     vertx.eventBus.publish(
         'revolver.locationUpdated',
-        {id: id, url: url, reload: reload}
+        {id: id, url: url, reload: reload, containerType: containerType}
     );
 });
 
@@ -205,7 +211,7 @@ vertx.eventBus.registerHandler('revolver.getLocations', function(msg, replier) {
 });
 
 vertx.eventBus.registerHandler('revolver.setLocation', function(msg) {
-    revolver.setLocation(msg.id, msg.url, msg.reload);
+    revolver.setLocation(msg.id, msg.url, msg.reload, msg.containerType);
 });
 
 vertx.eventBus.registerHandler('revolver.removeLocation', function(msg) {
