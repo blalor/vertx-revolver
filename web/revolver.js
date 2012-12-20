@@ -5,7 +5,13 @@ function debug() {
 }
 
 window.onerror = function() {
-    debug("window.onerror", arguments);
+    var args = ['window.onerror'];
+
+    for (var i = 0; i < arguments.length; i++) {
+        args.push(arguments[i]);
+    }
+
+    debug.apply(debug, args);
 
     return false;
 };
