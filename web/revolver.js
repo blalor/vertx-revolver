@@ -1,8 +1,14 @@
-function debug(msg) {
+function debug() {
     if ((typeof console !== 'undefined') && console.log) {
-        console.log(msg);
+        console.log.apply(console, arguments);
     }
 }
+
+window.onerror = function() {
+    debug("window.onerror", arguments);
+
+    return false;
+};
 
 function Revolver(eventBusUrl) {
     var self = this;
@@ -73,6 +79,7 @@ function Revolver(eventBusUrl) {
         self.removeLocation(id);
 
         var loc = locations[id] = location;
+        loc.id = id;
         loc.origUrl = loc.url;
 
         loc.url = loc.url.replace(new RegExp('@WIDTH@', 'g'), homenode.offsetWidth);
@@ -155,7 +162,6 @@ function Revolver(eventBusUrl) {
     self.rotateTo = function(id) {
         debug("rotating to " + id);
 
-        var currentLoc = currentLocationId ? locations[currentLocationId] : null;
         var nextLoc = locations[id];
 
         function switchView(evt) {
@@ -165,8 +171,15 @@ function Revolver(eventBusUrl) {
                 this.removeEventListener('load', switchView);
             }
 
-            if (currentLoc) {
-                currentLoc.container.style.display = 'none';
+            // hide all currently-displayed elements
+            for (var locId in locations) {
+                if (locations.hasOwnProperty(locId)) {
+                    var loc = locations[locId];
+
+                    if (loc.container.style.display !== 'none') {
+                        loc.container.style.display = 'none';
+                    }
+                }
             }
 
             nextLoc.container.style.display = 'block';
