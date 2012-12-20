@@ -75,9 +75,7 @@
             // when building the URL
             setTimeout(function() {
                 revolver = new Revolver(
-                    window.location.protocol + '//' +
-                    window.location.hostname + ':' +
-                    window.location.port + '/eventbus'
+                    window.location.toString() + 'eventbus'
                 );
             }, 5000);
 
